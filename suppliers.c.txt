@@ -1,0 +1,116 @@
+#include <stdio.h>
+#include "suppliers.h"
+
+Supplier suppliers[MAX_RECORDS];
+int supplier_count = 0;
+
+static int find_supplier_by_id(int id)
+{
+    int i;
+
+    for (i = 0; i < supplier_count; i++) {
+        if (suppliers[i].id == id)
+            return i;
+    }
+
+    return -1;
+}
+
+static void display_supplier(const Supplier *supplier)
+{
+    printf("\nSupplier ID: %d\n", supplier->id);
+    printf("Name: %s\n", supplier->name);
+    printf("Email: %s\n", supplier->email);
+    printf("Telephone: %s\n", supplier->telephone);
+    printf("Location: %s\n", supplier->location);
+}
+
+static void add_supplier(void)
+{
+    Supplier supplier;
+
+    if (supplier_count >= MAX_RECORDS) {
+        printf("Supplier list is full.\n");
+        return;
+    }
+
+    if (!read_int("Supplier ID: ", &supplier.id) || supplier.id <= 0) {
+        printf("Enter a valid positive ID.\n");
+        return;
+    }
+
+    if (find_supplier_by_id(supplier.id) != -1) {
+        printf("That supplier ID already exists.\n");
+        return;
+    }
+
+    if (!read_text("Supplier name: ", supplier.name, sizeof supplier.name) ||
+        !read_text("Email: ", supplier.email, sizeof supplier.email) ||
+        !read_text("Telephone: ", supplier.telephone,
+                   sizeof supplier.telephone) ||
+        !read_text("Town/location: ", supplier.location,
+                   sizeof supplier.location)) {
+        printf("Supplier information cannot be empty.\n");
+        return;
+    }
+
+    suppliers[supplier_count++] = supplier;
+    printf("Supplier added successfully.\n");
+}
+
+static void display_suppliers(void)
+{
+    int i;
+
+    if (supplier_count == 0) {
+        printf("No suppliers registered.\n");
+        return;
+    }
+
+    for (i = 0; i < supplier_count; i++)
+        display_supplier(&suppliers[i]);
+}
+
+static void search_supplier(void)
+{
+    int id;
+    int index;
+
+    if (!read_int("Enter supplier ID: ", &id)) {
+        printf("Invalid ID.\n");
+        return;
+    }
+
+    index = find_supplier_by_id(id);
+
+    if (index == -1)
+        printf("Supplier not found.\n");
+    else
+        display_supplier(&suppliers[index]);
+}
+
+void supplier_menu(void)
+{
+    int choice;
+
+    do {
+        printf("\n--- Supplier Management ---\n");
+        printf("1. Add supplier\n");
+        printf("2. Display suppliers\n");
+        printf("3. Search supplier by ID\n");
+        printf("0. Return to main menu\n");
+
+        if (!read_int("Choice: ", &choice)) {
+            printf("Invalid menu choice.\n");
+            continue;
+        }
+
+        switch (choice) {
+            case 1: add_supplier(); break;
+            case 2: display_suppliers(); break;
+            case 3: search_supplier(); break;
+            case 0: break;
+            default: printf("Choose a listed option.\n");
+        }
+    } while (choice != 0);
+}
