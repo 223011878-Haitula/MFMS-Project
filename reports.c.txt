@@ -1,0 +1,137 @@
+#include <stdio.h>
+#include "reports.h"
+
+static void employee_report(void)
+{
+    int i;
+    double total = 0.0;
+    double salary;
+    double highest = 0.0;
+    double lowest = 0.0;
+
+    if (employee_count == 0) {
+        printf("No employees registered.\n");
+        return;
+    }
+
+    for (i = 0; i < employee_count; i++) {
+        salary = employees[i].basic_salary
+               + employees[i].housing_allowance
+               + employees[i].transport_allowance;
+
+        total += salary;
+
+        if (i == 0 || salary > highest)
+            highest = salary;
+
+        if (i == 0 || salary < lowest)
+            lowest = salary;
+    }
+
+    printf("\n--- Employee Report ---\n");
+    printf("Total employees: %d\n", employee_count);
+    printf("Average salary: N$%.2f\n", total / employee_count);
+    printf("Highest salary: N$%.2f\n", highest);
+    printf("Lowest salary: N$%.2f\n", lowest);
+}
+
+static void budget_report(void)
+{
+    int i;
+    int exceeded = 0;
+    double total_allocated = 0.0;
+    double total_expenditure = 0.0;
+
+    if (budget_count == 0) {
+        printf("No budgets registered.\n");
+        return;
+    }
+
+    for (i = 0; i < budget_count; i++) {
+        total_allocated += budgets[i].allocated_budget;
+        total_expenditure += budgets[i].expenditure;
+
+        if (budgets[i].expenditure > budgets[i].allocated_budget) {
+            printf("Over-budget department: %s\n", budgets[i].department);
+            exceeded++;
+        }
+    }
+
+    printf("\n--- Budget Report ---\n");
+    printf("Total allocated: N$%.2f\n", total_allocated);
+    printf("Total expenditure: N$%.2f\n", total_expenditure);
+    printf("Remaining budget: N$%.2f\n",
+           total_allocated - total_expenditure);
+    printf("Departments over budget: %d\n", exceeded);
+}
+
+static void supplier_report(void)
+{
+    int i;
+
+    printf("\n--- Supplier Report ---\n");
+
+    if (supplier_count == 0) {
+        printf("No suppliers registered.\n");
+        return;
+    }
+
+    for (i = 0; i < supplier_count; i++) {
+        printf("%d. %s | %s | %s | %s\n",
+               suppliers[i].id,
+               suppliers[i].name,
+               suppliers[i].email,
+               suppliers[i].telephone,
+               suppliers[i].location);
+    }
+}
+
+static void asset_report(void)
+{
+    int i;
+
+    printf("\n--- Asset Report ---\n");
+
+    if (asset_count == 0) {
+        printf("No assets registered.\n");
+        return;
+    }
+
+    for (i = 0; i < asset_count; i++) {
+        printf("%d. %s | %s | N$%.2f | %s | %s\n",
+               assets[i].id,
+               assets[i].name,
+               assets[i].type,
+               assets[i].purchase_value,
+               assets[i].department,
+               assets[i].condition);
+    }
+}
+
+void reports_menu(void)
+{
+    int choice;
+
+    do {
+        printf("\n--- Reports ---\n");
+        printf("1. Employee report\n");
+        printf("2. Budget report\n");
+        printf("3. Supplier report\n");
+        printf("4. Asset report\n");
+        printf("0. Return to main menu\n");
+
+        if (!read_int("Choice: ", &choice)) {
+            printf("Invalid menu choice.\n");
+            continue;
+        }
+
+        switch (choice) {
+            case 1: employee_report(); break;
+            case 2: budget_report(); break;
+            case 3: supplier_report(); break;
+            case 4: asset_report(); break;
+            case 0: break;
+            default: printf("Choose a listed option.\n");
+        }
+    } while (choice != 0);
+}
