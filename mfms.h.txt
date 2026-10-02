@@ -1,0 +1,70 @@
+#ifndef MFMS_H
+#define MFMS_H
+
+#define MAX_RECORDS 100
+#define NAME_LENGTH 50
+#define DEPARTMENT_LENGTH 40
+#define TYPE_LENGTH 30
+#define EMAIL_LENGTH 60
+#define PHONE_LENGTH 25
+#define LOCATION_LENGTH 40
+#define CONDITION_LENGTH 30
+
+typedef struct {
+    int id;
+    char name[NAME_LENGTH];
+    char department[DEPARTMENT_LENGTH];
+    double basic_salary;
+    double housing_allowance;
+    double transport_allowance;
+} Employee;
+
+typedef struct {
+    char department[DEPARTMENT_LENGTH];
+    double allocated_budget;
+    double expenditure;
+} Budget;
+
+typedef struct {
+    int id;
+    char name[NAME_LENGTH];
+    char email[EMAIL_LENGTH];
+    char telephone[PHONE_LENGTH];
+    char location[LOCATION_LENGTH];
+} Supplier;
+
+typedef struct {
+    int id;
+    char name[NAME_LENGTH];
+    char type[TYPE_LENGTH];
+    double purchase_value;
+    char department[DEPARTMENT_LENGTH];
+    char condition[CONDITION_LENGTH];
+} Asset;
+
+/* Shared data and record counts */
+extern Employee employees[MAX_RECORDS];
+extern int employee_count;
+
+extern Budget budgets[MAX_RECORDS];
+extern int budget_count;
+
+extern Supplier suppliers[MAX_RECORDS];
+extern int supplier_count;
+
+extern Asset assets[MAX_RECORDS];
+extern int asset_count;
+
+/* Shared input helpers */
+int read_int(const char *prompt, int *value);
+int read_double(const char *prompt, double *value);
+int read_text(const char *prompt, char *destination, int size);
+
+/* Module menus */
+void employee_menu(void);
+void budget_menu(void);
+void supplier_menu(void);
+void asset_menu(void);
+void reports_menu(void);
+
+#endif
