@@ -1,0 +1,8 @@
+#ifndef ASSETS_H
+#define ASSETS_H
+
+#include "mfms.h"
+
+void asset_menu(void);
+
+#endif
