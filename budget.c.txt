@@ -1,0 +1,100 @@
+#include <stdio.h>
+#include <string.h>
+#include "budget.h"
+
+Budget budgets[MAX_RECORDS];
+int budget_count = 0;
+
+static int find_budget(const char *department)
+{
+    int i;
+
+    for (i = 0; i < budget_count; i++) {
+        if (strcmp(budgets[i].department, department) == 0)
+            return i;
+    }
+
+    return -1;
+}
+
+static void add_or_update_budget(void)
+{
+    char department[DEPARTMENT_LENGTH];
+    double allocated;
+    double expenditure;
+    int index;
+
+    if (!read_text("Department: ", department, sizeof department)) {
+        printf("Department cannot be empty.\n");
+        return;
+    }
+
+    if (!read_double("Allocated budget: N$", &allocated) || allocated < 0 ||
+        !read_double("Expenditure: N$", &expenditure) || expenditure < 0) {
+        printf("Amounts must be valid and non-negative.\n");
+        return;
+    }
+
+    index = find_budget(department);
+
+    if (index == -1) {
+        if (budget_count >= MAX_RECORDS) {
+            printf("Budget list is full.\n");
+            return;
+        }
+
+        index = budget_count++;
+        strcpy(budgets[index].department, department);
+    }
+
+    budgets[index].allocated_budget = allocated;
+    budgets[index].expenditure = expenditure;
+    printf("Budget information saved.\n");
+}
+
+static void display_budgets(void)
+{
+    int i;
+    double remaining;
+
+    if (budget_count == 0) {
+        printf("No budgets registered.\n");
+        return;
+    }
+
+    for (i = 0; i < budget_count; i++) {
+        remaining = budgets[i].allocated_budget - budgets[i].expenditure;
+
+        printf("\nDepartment: %s\n", budgets[i].department);
+        printf("Allocated budget: N$%.2f\n",
+               budgets[i].allocated_budget);
+        printf("Expenditure: N$%.2f\n", budgets[i].expenditure);
+        printf("Remaining budget: N$%.2f\n", remaining);
+        printf("Status: %s\n",
+               remaining >= 0 ? "WITHIN BUDGET" : "OVER BUDGET");
+    }
+}
+
+void budget_menu(void)
+{
+    int choice;
+
+    do {
+        printf("\n--- Budget Management ---\n");
+        printf("1. Enter or update department budget\n");
+        printf("2. Display budgets\n");
+        printf("0. Return to main menu\n");
+
+        if (!read_int("Choice: ", &choice)) {
+            printf("Invalid menu choice.\n");
+            continue;
+        }
+
+        switch (choice) {
+            case 1: add_or_update_budget(); break;
+            case 2: display_budgets(); break;
+            case 0: break;
+            default: printf("Choose a listed option.\n");
+        }
+    } while (choice != 0);
+}
