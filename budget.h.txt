@@ -1,0 +1,8 @@
+#ifndef BUDGET_H
+#define BUDGET_H
+
+#include "mfms.h"
+
+void budget_menu(void);
+
+#endif
